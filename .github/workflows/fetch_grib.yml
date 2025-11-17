@@ -167,8 +167,8 @@ jobs:
     needs: fetch_and_generate
     strategy:
       matrix:
-        variable: [t2m, t2m_eu, ww, ww_eu, pmsl, pmsl_eu]
-      max-parallel: 6
+        variable: [t2m, t2m_eu, ww, ww_eu, pmsl, pmsl_eu, snow, snow_eu]
+      max-parallel: 8
       
     steps:
       - name: Checkout Repo
