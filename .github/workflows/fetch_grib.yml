@@ -41,7 +41,7 @@ jobs:
           HOUR=$(date -u +%H)
           case $HOUR in
             03|04|05|14) RUN=00 ;;
-            15|16|17|) RUN=12 ;;
+            15|16|17) RUN=12 ;;
           esac
           DATE=$(date -u +%Y%m%d)
           echo "RUN=$RUN" >> $GITHUB_ENV
