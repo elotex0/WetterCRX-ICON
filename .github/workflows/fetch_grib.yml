@@ -40,7 +40,7 @@ jobs:
         run: |
           HOUR=$(date -u +%H)
           case $HOUR in
-            03|04|05) RUN=00 ;;
+            03|04|05|14) RUN=00 ;;
             15|16|17|) RUN=12 ;;
           esac
           DATE=$(date -u +%Y%m%d)
@@ -150,7 +150,13 @@ jobs:
           name: grib2
           path: data/
 
-      - name: Delete GRIB2 files (local cleanup)
+      - name: Upload grid file as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: grid
+          path: data/grid/
+
+      - name: Delete GRIB2 & grid files (local cleanup)
         run: rm -rf data/
 
   # -------------------------------------------------------
@@ -182,6 +188,12 @@ jobs:
           name: grib2
           path: data/
 
+      - name: Download grid artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: grid
+          path: data/grid/
+
       - name: Generate PNGs for ${{ matrix.variable }}
         run: |
           mkdir -p icon/${{ matrix.variable }}
@@ -197,7 +209,8 @@ jobs:
           python scripts/generate_pngs.py \
             "$input_dir" \
             "icon/${{ matrix.variable }}" \
-            "${{ matrix.variable }}"
+            "${{ matrix.variable }}" \
+            "data/grid/grid.nc"
 
 
       - name: Upload PNGs artifact
