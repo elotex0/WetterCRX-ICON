@@ -147,6 +147,7 @@ jobs:
       - name: Download geo GRIB2 files
         run: |
           mkdir -p data/geo
+          cd data/geo
           seq 0 77 | xargs -n 1 -P 12 -I{} bash -c '
             i_padded=$(printf "%03d" {} )
             URL="https://opendata.dwd.de/weather/nwp/icon/grib/${{ env.RUN }}/fi/icon_global_icosahedral_pressure-level_${{ env.DATE }}${{ env.RUN }}_${i_padded}_500_FI.grib2.bz2"
