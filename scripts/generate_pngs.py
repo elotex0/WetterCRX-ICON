@@ -565,7 +565,7 @@ for filename in sorted(os.listdir(data_dir)):
             data_smooth = gaussian_filter (data_grid, sigma = 2.0)
             im = ax.pcolormesh(lon_grid, lat_grid, data_smooth, cmap=cmap, norm=norm, transform=ccrs.PlateCarree())
 
-            data_geo = data_grid  # in m # data schon in hPa
+            data_geo = data_smooth  # in m # data schon in hPa
             main_levels = list(range(4800, 6000, 40))
             cs = ax.contour(lon_grid, lat_grid, data_geo, levels=main_levels,
                             colors='white', linewidths=0.8, alpha=0.9)
