@@ -186,12 +186,12 @@ pmsl_norm = BoundaryNorm(pmsl_bounds_colors, ncolors=len(pmsl_bounds_colors))
 #-------------------------------
 # Schneehöhen-Farben
 #------------------------------
-snow_bounds = [0, 0.5, 1, 2, 3, 4, 5, 7, 10, 15, 20, 30, 40, 50, 60, 70, 80, 100, 150, 200, 250, 300, 400]  # in cm
+snow_bounds = [0, 0.1, 0.5, 1, 2, 3, 4, 5, 7, 10, 15, 20, 30, 40, 50, 60, 70, 80, 100, 150, 200, 250, 300, 400]  # in cm
 snow_colors = ListedColormap([
-        "#F8F8F8", "#DCDBFA", "#AAA9C8", "#75BAFF", "#349AFF", "#0682FF",
+        "#F8F8F8", "#DCDBFA", "#AAA9C8", "#75BAFF", "#349AFF", "#0582FF",
         "#0069D2", "#004F9C", "#01327F", "#4B007F", "#64007F", "#9101BB",
         "#C300FC", "#D235FF", "#EBA6FF", "#F4CEFF", "#FAB2CA", "#FF9798",
-        "#FE6E6E", "#DF093F", "#BE0000", "#A40000", "#880000"
+        "#FE6E6E", "#DF093F", "#BE0000", "#A40000", "#880000", "#460000"
     ])
 snow_norm = mcolors.BoundaryNorm(snow_bounds, snow_colors.N)
 
