@@ -327,6 +327,18 @@ for filename in sorted(os.listdir(data_dir)):
         data = ds["z"].values / 9.80665
         data[data < 0] = np.nan
         cmap, norm = geo_colors, geo_norm
+    elif var_type == "t850":
+        if "t" not in ds:
+            print(f"Keine t-Variable in {filename} ds.keys(): {list(ds.keys())}")
+            continue
+        data = ds["t"].values - 273.15
+        cmap, norm = t2m_colors, t2m_norm
+    elif var_type == "t850_eu":
+        if "t" not in ds:
+            print(f"Keine t-Variable in {filename} ds.keys(): {list(ds.keys())}")
+            continue
+        data = ds["t"].values - 273.15
+        cmap, norm = t2m_colors, t2m_norm
     else:
         print(f"Var_type {var_type} nicht implementiert")
         continue
@@ -348,7 +360,7 @@ for filename in sorted(os.listdir(data_dir)):
     # --------------------------
     # Figure
     # --------------------------
-    if var_type in ["pmsl_eu", "ww_eu", "t2m_eu", "snow_eu", "geo_eu"]:
+    if var_type in ["pmsl_eu", "ww_eu", "t2m_eu", "snow_eu", "geo_eu", "t850_eu"]:
         scale = 0.9
         fig = plt.figure(figsize=(FIG_W_PX/100*scale, FIG_H_PX/100*scale), dpi=100)
         shift_up = 0.02
@@ -370,7 +382,7 @@ for filename in sorted(os.listdir(data_dir)):
     # ------------------------------
     # Regelmäßiges Gitter definieren
     # ------------------------------
-    if var_type in ["pmsl_eu", "t2m_eu", "ww_eu", "snow_eu", "geo_eu"]:
+    if var_type in ["pmsl_eu", "t2m_eu", "ww_eu", "snow_eu", "geo_eu", "t850_eu"]:
         res = 0.1   # gröber für Europa (~11 km)
         lon_min, lon_max, lat_min, lat_max = extent_eu
         buffer = res * 20
@@ -414,6 +426,12 @@ for filename in sorted(os.listdir(data_dir)):
             data_smooth = gaussian_filter (data_grid, sigma = 2.0)
             im = ax.pcolormesh(lon_grid, lat_grid, data_smooth, cmap=cmap, norm=norm, transform=ccrs.PlateCarree())
         elif var_type == "t2m_eu":
+            data_smooth = gaussian_filter (data_grid, sigma = 2.0)
+            im = ax.pcolormesh(lon_grid, lat_grid, data_smooth, cmap=cmap, norm=norm, transform=ccrs.PlateCarree())
+        elif var_type == "t850":
+            data_smooth = gaussian_filter (data_grid, sigma = 2.0)
+            im = ax.pcolormesh(lon_grid, lat_grid, data_smooth, cmap=cmap, norm=norm, transform=ccrs.PlateCarree())
+        elif var_type == "t850_eu":
             data_smooth = gaussian_filter (data_grid, sigma = 2.0)
             im = ax.pcolormesh(lon_grid, lat_grid, data_smooth, cmap=cmap, norm=norm, transform=ccrs.PlateCarree())
         elif var_type == "snow":
@@ -615,7 +633,7 @@ for filename in sorted(os.listdir(data_dir)):
         im = ax.pcolormesh(lon_grid, lat_grid, idx_data, cmap=cmap, vmin=-0.5, vmax=len(codes)-0.5, transform=ccrs.PlateCarree())
 
     # Bundesländer-Grenzen aus Cartopy (statt GeoJSON)
-    if var_type in ["pmsl_eu", "t2m_eu", "ww_eu", "snow_eu", "geo_eu"]:
+    if var_type in ["pmsl_eu", "t2m_eu", "ww_eu", "snow_eu", "geo_eu", "t850_eu"]:
         # 🌍 Europa: nur Ländergrenzen + europäische Städte
         ax.add_feature(cfeature.BORDERS.with_scale("10m"), edgecolor="black", linewidth=0.7)
         ax.add_feature(cfeature.COASTLINE.with_scale("10m"), edgecolor="black", linewidth=0.7)
@@ -649,8 +667,8 @@ for filename in sorted(os.listdir(data_dir)):
     # --------------------------
     legend_h_px = 50
     legend_bottom_px = 45
-    if var_type in ["t2m", "t2m_eu", "pmsl", "pmsl_eu", "snow", "snow_eu", "geo_eu"]:
-        bounds = t2m_bounds if var_type == "t2m" else t2m_bounds if var_type == "t2m_eu" else pmsl_bounds_colors if var_type == "pmsl" else pmsl_bounds_colors if var_type == "pmsl_eu" else snow_bounds if var_type == "snow" else snow_bounds if var_type == "snow_eu" else geo_bounds
+    if var_type in ["t2m", "t2m_eu", "pmsl", "pmsl_eu", "snow", "snow_eu", "geo_eu", "t850", "t850_eu"]:
+        bounds = t2m_bounds if var_type == "t2m" else t2m_bounds if var_type == "t2m_eu" else pmsl_bounds_colors if var_type == "pmsl" else pmsl_bounds_colors if var_type == "pmsl_eu" else snow_bounds if var_type == "snow" else snow_bounds if var_type == "snow_eu" else geo_bounds if var_type == "geo" else t2m_bounds if var_type == "t850" else t2m_bounds
         cbar_ax = fig.add_axes([0.03, legend_bottom_px / FIG_H_PX, 0.94, legend_h_px / FIG_H_PX])
         cbar = fig.colorbar(im, cax=cbar_ax, orientation="horizontal", ticks=bounds)
         cbar.ax.tick_params(colors="black", labelsize=7)
@@ -661,6 +679,12 @@ for filename in sorted(os.listdir(data_dir)):
             tick_labels = [str(tick) if tick % 4 == 0 else "" for tick in bounds]
             cbar.set_ticklabels(tick_labels)
         if var_type == "t2m_eu":
+            tick_labels = [str(tick) if tick % 4 == 0 else "" for tick in bounds]
+            cbar.set_ticklabels(tick_labels)
+        if var_type == "t850":
+            tick_labels = [str(tick) if tick % 4 == 0 else "" for tick in bounds]
+            cbar.set_ticklabels(tick_labels)
+        if var_type == "t850_eu":
             tick_labels = [str(tick) if tick % 4 == 0 else "" for tick in bounds]
             cbar.set_ticklabels(tick_labels)
         if var_type=="pmsl":
@@ -694,6 +718,8 @@ for filename in sorted(os.listdir(data_dir)):
         "snow": "Schneehöhe (cm)",
         "snow_eu": "Schneehöhe (cm), Europa",
         "geo_eu": "Geopotentielle Höhe 500hPa (m), Europa",
+        "t850": "Temperatur 850hPa (°C)",
+        "t850_eu": "Temperatur 850hPa (°C), Europa",
     }
 
     left_text = footer_texts.get(var_type, var_type) + \
