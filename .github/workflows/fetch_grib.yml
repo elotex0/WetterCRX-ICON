@@ -188,6 +188,28 @@ jobs:
             fi
           '
 
+      - name: Download vmax GRIB2 files
+        run: |
+          mkdir -p data/wind
+          cd data/wind
+          seq 0 77 | xargs -n 1 -P 12 -I{} bash -c '
+            i_padded=$(printf "%03d" {} )
+            URL="https://opendata.dwd.de/weather/nwp/icon/grib/${{ env.RUN }}/vmax_10m/icon_global_icosahedral_single-level_${{ env.DATE }}${{ env.RUN }}_${i_padded}_VMAX_10M.grib2.bz2"
+            wget -O wind_${i_padded}.grib2.bz2 "$URL" || echo "Datei $URL nicht verfügbar, überspringe..."
+            if [ -f "wind_${i_padded}.grib2.bz2" ]; then
+              bunzip2 -f wind_${i_padded}.grib2.bz2
+            fi
+          '
+
+          seq 78 3 180 | xargs -n 1 -P 12 -I{} bash -c '
+            i_padded=$(printf "%03d" {} )
+            URL="https://opendata.dwd.de/weather/nwp/icon/grib/${{ env.RUN }}/vmax_10m/icon_global_icosahedral_single-level_${{ env.DATE }}${{ env.RUN }}_${i_padded}_VMAX_10M.grib2.bz2"
+            wget -O wind_${i_padded}.grib2.bz2 "$URL" || echo "Datei $URL nicht verfügbar, überspringe..."
+            if [ -f "wind_${i_padded}.grib2.bz2" ]; then
+              bunzip2 -f wind_${i_padded}.grib2.bz2
+            fi
+          '
+
       
 
       - name: Upload GRIB2 as artifact
@@ -213,8 +235,8 @@ jobs:
     needs: fetch_and_generate
     strategy:
       matrix:
-        variable: [t2m, t2m_eu, ww, ww_eu, pmsl, pmsl_eu, snow, snow_eu, geo_eu, t850, t850_eu]
-      max-parallel: 11
+        variable: [t2m, t2m_eu, ww, ww_eu, pmsl, pmsl_eu, snow, snow_eu, geo_eu, t850, t850_eu, wind, wind_eu]
+      max-parallel: 13
       
     steps:
       - name: Checkout Repo
@@ -257,6 +279,8 @@ jobs:
             input_dir="data/geo"
           elif [ "${{ matrix.variable }}" = "t850_eu" ]; then
             input_dir="data/t850"
+          elif [ "${{ matrix.variable }}" = "wind_eu" ]; then
+            input_dir="data/wind"
           fi
           python scripts/generate_pngs.py \
             "$input_dir" \
