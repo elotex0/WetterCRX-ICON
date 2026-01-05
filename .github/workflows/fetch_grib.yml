@@ -192,7 +192,7 @@ jobs:
         run: |
           mkdir -p data/wind
           cd data/wind
-          seq 0 77 | xargs -n 1 -P 12 -I{} bash -c '
+          seq 1 77 | xargs -n 1 -P 12 -I{} bash -c '
             i_padded=$(printf "%03d" {} )
             URL="https://opendata.dwd.de/weather/nwp/icon/grib/${{ env.RUN }}/vmax_10m/icon_global_icosahedral_single-level_${{ env.DATE }}${{ env.RUN }}_${i_padded}_VMAX_10M.grib2.bz2"
             wget -O wind_${i_padded}.grib2.bz2 "$URL" || echo "Datei $URL nicht verfügbar, überspringe..."
