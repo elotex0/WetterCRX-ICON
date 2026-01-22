@@ -87,7 +87,7 @@ ww_colors_base = {
 }
 ww_categories = {
     "Bewölkung": [0, 1, 2, 3],
-    "Nebel": [45],
+    "Nebel": [48, 45],
     "Schneeregen": [56, 57],
     "Regen": [61, 63, 65],
     "gefr. Regen": [66, 67],
