@@ -217,12 +217,14 @@ jobs:
         with:
           name: grib2
           path: data/
+          retention-days: 1
 
       - name: Upload grid file as artifact
         uses: actions/upload-artifact@v4
         with:
           name: grid
           path: data/grid/
+          retention-days: 1
 
       - name: Delete GRIB2 & grid files (local cleanup)
         run: rm -rf data/
@@ -294,6 +296,7 @@ jobs:
         with:
           name: icon-${{ matrix.variable }}
           path: icon/${{ matrix.variable }}
+          retention-days: 1
 
   # -------------------------------------------------------
   # 3️⃣ Merge PNGs + Deploy to R2
