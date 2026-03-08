@@ -294,7 +294,6 @@ jobs:
         with:
           name: icon-${{ matrix.variable }}
           path: icon/${{ matrix.variable }}
-          retention-days: 1
 
   # -------------------------------------------------------
   # 3️⃣ Merge PNGs + Deploy to R2
