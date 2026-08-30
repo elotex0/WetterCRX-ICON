@@ -154,7 +154,7 @@ snow_colors = ListedColormap([
 snow_norm = mcolors.BoundaryNorm(snow_bounds, snow_colors.N)
 
 # Bounding Box ICON
-extent = [-4.1616, 20.5444, 43.0440, 58.1647]  # lon_min, lon_max, lat_min, lat_max
+extent = [-3.94, 20.34, 43.18, 58.08]  # lon_min, lon_max, lat_min, lat_max
 
 FOOTER_TEXTS = {
     "ww": "Signifikantes Wetter",
