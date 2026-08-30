@@ -78,28 +78,6 @@ jobs:
               bunzip2 -f t2m_${i_padded}.grib2.bz2
             fi
           '
-
-      - name: Download t850 GRIB2 files
-        run: |
-          mkdir -p data/t850
-          cd data/t850
-          seq 0 77 | xargs -n 1 -P 12 -I{} bash -c '
-            i_padded=$(printf "%03d" {})
-            URL="https://opendata.dwd.de/weather/nwp/icon/grib/${{ env.RUN }}/t/icon_global_icosahedral_pressure-level_${{ env.DATE }}${{ env.RUN }}_${i_padded}_850_T.grib2.bz2"
-            wget -O t850_${i_padded}.grib2.bz2 "$URL" || echo "Datei $URL nicht verfügbar, überspringe..."
-            if [ -f "t850_${i_padded}.grib2.bz2" ]; then
-              bunzip2 -f t850_${i_padded}.grib2.bz2
-            fi
-          '
-
-          seq 78 3 180 | xargs -n 1 -P 12 -I{} bash -c '
-            i_padded=$(printf "%03d" {})
-            URL="https://opendata.dwd.de/weather/nwp/icon/grib/${{ env.RUN }}/t/icon_global_icosahedral_pressure-level_${{ env.DATE }}${{ env.RUN }}_${i_padded}_850_T.grib2.bz2"
-            wget -O t850_${i_padded}.grib2.bz2 "$URL" || echo "Datei $URL nicht verfügbar, überspringe..."
-            if [ -f "t850_${i_padded}.grib2.bz2" ]; then
-              bunzip2 -f t850_${i_padded}.grib2.bz2
-            fi
-          '
       
       - name: Download ww GRIB2 files
         run: |
@@ -169,8 +147,8 @@ jobs:
     needs: fetch_and_generate
     strategy:
       matrix:
-        variable: [t2m, ww, t850, wind]
-      max-parallel: 4
+        variable: [t2m, ww, wind]
+      max-parallel: 3
       
     steps:
       - name: Checkout Repo
