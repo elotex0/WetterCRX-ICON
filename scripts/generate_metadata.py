@@ -40,7 +40,7 @@ FILENAME_RE = re.compile(r"^(?P<var_type>.+)_(?P<date>\d{8})_(?P<time>\d{4})\.we
 # nicht auseinanderlaufen kann, wird der Wert hier zusaetzlich in die
 # meta.json geschrieben; das HTML kann ihn dann von dort lesen statt
 # ihn separat hart zu codieren.
-EXTENT_LONLAT = [-4.1616, 20.5444, 43.0440, 58.1647]  # lon_min, lon_max, lat_min, lat_max
+EXTENT_LONLAT = [-3.94, 20.34, 43.18, 58.08]  # lon_min, lon_max, lat_min, lat_max
 
 EARTH_RADIUS = 6378137.0  # Meter, WGS84/Web-Mercator-Kugelradius
 
