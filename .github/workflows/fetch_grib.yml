@@ -40,7 +40,7 @@ jobs:
         run: |
           HOUR=$(date -u +%H)
           case $HOUR in
-            03|04|05|11|12) RUN=00 ;;
+            03|04|05|10|11) RUN=00 ;;
             15|16|17) RUN=12 ;;
           esac
           DATE=$(date -u +%Y%m%d)
@@ -49,12 +49,14 @@ jobs:
           echo "run=$RUN" >> $GITHUB_OUTPUT
           echo "date=$DATE" >> $GITHUB_OUTPUT
 
-      - name: Download ICON unstructured grid
+      # 🆕 NEU: Grid-Dateien herunterladen
+      - name: Download ICON grid (clat/clon)
         run: |
           mkdir -p data/grid
-          wget -q http://icon-downloads.mpimet.mpg.de/grids/public/edzw/icon_grid_0026_R03B07_G.nc -O data/grid/grid.nc
-          echo "✅ ICON grid heruntergeladen"
-
+          wget -q https://github.com/elotex0/WetterCRX-ICON/releases/download/v.1.0/clat.grib2 -O data/grid/clat.grib2
+          wget -q https://github.com/elotex0/WetterCRX-ICON/releases/download/v.1.0/clon.grib2 -O data/grid/clon.grib2
+          echo "✅ ICON grid (clat/clon) heruntergeladen"
+          
       - name: Download t2m GRIB2 files
         run: |
           mkdir -p data/t2m
@@ -120,73 +122,6 @@ jobs:
               bunzip2 -f ww_${i_padded}.grib2.bz2
             fi
           '
-          
-      - name: Download sde GRIB2 files
-        run: |
-          mkdir -p data/snow
-          cd data/snow
-          seq 0 77 | xargs -n 1 -P 12 -I{} bash -c '
-            i_padded=$(printf "%03d" {} )
-            URL="https://opendata.dwd.de/weather/nwp/icon/grib/${{ env.RUN }}/h_snow/icon_global_icosahedral_single-level_${{ env.DATE }}${{ env.RUN }}_${i_padded}_H_SNOW.grib2.bz2"
-            wget -O snow_${i_padded}.grib2.bz2 "$URL" || echo "Datei $URL nicht verfügbar, überspringe..."
-            if [ -f "snow_${i_padded}.grib2.bz2" ]; then
-              bunzip2 -f snow_${i_padded}.grib2.bz2
-            fi
-          '
-
-          seq 78 3 180 | xargs -n 1 -P 12 -I{} bash -c '
-            i_padded=$(printf "%03d" {} )
-            URL="https://opendata.dwd.de/weather/nwp/icon/grib/${{ env.RUN }}/h_snow/icon_global_icosahedral_single-level_${{ env.DATE }}${{ env.RUN }}_${i_padded}_H_SNOW.grib2.bz2"
-            wget -O snow_${i_padded}.grib2.bz2 "$URL" || echo "Datei $URL nicht verfügbar, überspringe..."
-            if [ -f "snow_${i_padded}.grib2.bz2" ]; then
-              bunzip2 -f snow_${i_padded}.grib2.bz2
-            fi
-          '
-
-
-      - name: Download pmsl GRIB2 files
-        run: |
-          mkdir -p data/pmsl
-          cd data/pmsl
-          seq 0 77 | xargs -n 1 -P 12 -I{} bash -c '
-            i_padded=$(printf "%03d" {} )
-            URL="https://opendata.dwd.de/weather/nwp/icon/grib/${{ env.RUN }}/pmsl/icon_global_icosahedral_single-level_${{ env.DATE }}${{ env.RUN }}_${i_padded}_PMSL.grib2.bz2"
-            wget -O pmsl_${i_padded}.grib2.bz2 "$URL" || echo "Datei $URL nicht verfügbar, überspringe..."
-            if [ -f "pmsl_${i_padded}.grib2.bz2" ]; then
-              bunzip2 -f pmsl_${i_padded}.grib2.bz2
-            fi
-          '
-
-          seq 78 3 180 | xargs -n 1 -P 12 -I{} bash -c '
-            i_padded=$(printf "%03d" {} )
-            URL="https://opendata.dwd.de/weather/nwp/icon/grib/${{ env.RUN }}/pmsl/icon_global_icosahedral_single-level_${{ env.DATE }}${{ env.RUN }}_${i_padded}_PMSL.grib2.bz2"
-            wget -O pmsl_${i_padded}.grib2.bz2 "$URL" || echo "Datei $URL nicht verfügbar, überspringe..."
-            if [ -f "pmsl_${i_padded}.grib2.bz2" ]; then
-              bunzip2 -f pmsl_${i_padded}.grib2.bz2
-            fi
-          '
-
-      - name: Download geo GRIB2 files
-        run: |
-          mkdir -p data/geo
-          cd data/geo
-          seq 0 77 | xargs -n 1 -P 12 -I{} bash -c '
-            i_padded=$(printf "%03d" {} )
-            URL="https://opendata.dwd.de/weather/nwp/icon/grib/${{ env.RUN }}/fi/icon_global_icosahedral_pressure-level_${{ env.DATE }}${{ env.RUN }}_${i_padded}_500_FI.grib2.bz2"
-            wget -O geo_${i_padded}.grib2.bz2 "$URL" || echo "Datei $URL nicht verfügbar, überspringe..."
-            if [ -f "geo_${i_padded}.grib2.bz2" ]; then
-              bunzip2 -f geo_${i_padded}.grib2.bz2
-            fi
-          '
-
-          seq 78 3 180 | xargs -n 1 -P 12 -I{} bash -c '
-            i_padded=$(printf "%03d" {} )
-            URL="https://opendata.dwd.de/weather/nwp/icon/grib/${{ env.RUN }}/fi/icon_global_icosahedral_pressure-level_${{ env.DATE }}${{ env.RUN }}_${i_padded}_500_FI.grib2.bz2"
-            wget -O geo_${i_padded}.grib2.bz2 "$URL" || echo "Datei $URL nicht verfügbar, überspringe..."
-            if [ -f "geo_${i_padded}.grib2.bz2" ]; then
-              bunzip2 -f geo_${i_padded}.grib2.bz2
-            fi
-          '
 
       - name: Download vmax GRIB2 files
         run: |
@@ -210,7 +145,6 @@ jobs:
             fi
           '
 
-      
 
       - name: Upload GRIB2 as artifact
         uses: actions/upload-artifact@v4
@@ -235,8 +169,8 @@ jobs:
     needs: fetch_and_generate
     strategy:
       matrix:
-        variable: [t2m, t2m_eu, ww, ww_eu, pmsl, pmsl_eu, snow, snow_eu, geo_eu, t850, t850_eu, wind, wind_eu]
-      max-parallel: 13
+        variable: [t2m, ww, t850, wind]
+      max-parallel: 4
       
     steps:
       - name: Checkout Repo
@@ -266,27 +200,11 @@ jobs:
         run: |
           mkdir -p icon/${{ matrix.variable }}
           input_dir="data/${{ matrix.variable }}"
-          
-          if [ "${{ matrix.variable }}" = "pmsl_eu" ]; then
-            input_dir="data/pmsl"
-          elif [ "${{ matrix.variable }}" = "ww_eu" ]; then
-            input_dir="data/ww"
-          elif [ "${{ matrix.variable }}" = "t2m_eu" ]; then
-            input_dir="data/t2m"
-          elif [ "${{ matrix.variable }}" = "snow_eu" ]; then
-            input_dir="data/snow"
-          elif [ "${{ matrix.variable }}" = "geo_eu" ]; then
-            input_dir="data/geo"
-          elif [ "${{ matrix.variable }}" = "t850_eu" ]; then
-            input_dir="data/t850"
-          elif [ "${{ matrix.variable }}" = "wind_eu" ]; then
-            input_dir="data/wind"
-          fi
           python scripts/generate_pngs.py \
             "$input_dir" \
             "icon/${{ matrix.variable }}" \
             "${{ matrix.variable }}" \
-            "data/grid/grid.nc"
+            "data/grid"
 
 
       - name: Upload PNGs artifact
