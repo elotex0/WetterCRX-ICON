@@ -229,6 +229,12 @@ jobs:
             ${{ needs.fetch_and_generate.outputs.run }} \
             ${{ needs.fetch_and_generate.outputs.date }}
 
+      - name: Rohdateien mit gzip komprimieren
+        run: |
+          find icon/${{ needs.fetch_and_generate.outputs.run }} -type f | while read -r f; do
+            gzip -9 -n -c "$f" > "$f.tmp" && mv "$f.tmp" "$f"
+          done
+
       - name: Clean old runs on R2 except current
         run: |
           for run_folder in $(aws s3 ls s3://${{ secrets.R2_BUCKET }}/icon/ \
@@ -246,7 +252,8 @@ jobs:
         run: |
           aws s3 sync ./icon/${{ needs.fetch_and_generate.outputs.run }}/ \
             s3://${{ secrets.R2_BUCKET }}/icon/${{ needs.fetch_and_generate.outputs.run }}/ \
-            --endpoint-url https://${{ secrets.R2_ACCOUNT_ID }}.r2.cloudflarestorage.com
+            --endpoint-url https://${{ secrets.R2_ACCOUNT_ID }}.r2.cloudflarestorage.com \
+            --content-type application/gzip
 
           aws s3 cp ./icon/metadata.json \
             s3://${{ secrets.R2_BUCKET }}/icon/metadata.json \
